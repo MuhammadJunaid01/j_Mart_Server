@@ -11,6 +11,7 @@ router.post("/addProduct", async (req, res, next) => {
     console.log("req body", req.body);
     if (error) {
       console.log(error);
+      next(error);
     }
     const {
       categoryName,
@@ -18,6 +19,10 @@ router.post("/addProduct", async (req, res, next) => {
       manufacturerBrand,
       price,
       manufacturerName,
+      description,
+      offer,
+      copunCode,
+      expireDate,
     } = req.body;
     try {
       const product = new Products({
@@ -26,7 +31,11 @@ router.post("/addProduct", async (req, res, next) => {
         ManufacturerName: manufacturerName,
         Price: price,
         Category: categoryName,
+        description: description,
         ProductImage: req.file.filename,
+        isOffer: offer,
+        copunCode: copunCode,
+        expireDate: expireDate,
       });
 
       const saveProduct = await product.save();
@@ -42,4 +51,15 @@ router.post("/addProduct", async (req, res, next) => {
   });
 });
 
+//get offer
+router.get("/offer", async (req, res, next) => {
+  const data = await Products.find({});
+  const offer = [];
+  const result = data.map((item) => {
+    if (item.isOffer) {
+      return offer.push(item);
+    }
+  });
+  res.send(offer);
+});
 module.exports = router;

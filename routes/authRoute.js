@@ -5,7 +5,9 @@ const router = require("express").Router();
 
 router.post("/register", async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    console.log("req bod", req.body);
+    const { name: username, email, password } = req.body;
+
     const existEmail = await User.findOne({ email: email });
     if (existEmail) {
       res.status(400).json({ message: "user already register" });
@@ -18,9 +20,12 @@ router.post("/register", async (req, res, next) => {
       password: hashPassword,
     });
     const result = await newUser.save();
-    res.status(200).json({ message: result });
+    res.status(200).json({ status: "OK", data: result });
+    // console.log("result", result);
+    // const { password, ...userInfo } = result;
   } catch (error) {
     next(new Error(error.message));
+    console.log(error);
   }
 });
 router.post("/login", async (req, res, next) => {

@@ -20,6 +20,18 @@ const productSchema = new mongoose.Schema(
     ProductImage: {
       type: String,
     },
+    description: {
+      type: String,
+    },
+    isOffer: {
+      type: Boolean,
+    },
+    copunCode: {
+      type: String,
+    },
+    expireDate: {
+      type: String,
+    },
   },
   {
     timestamps: true,

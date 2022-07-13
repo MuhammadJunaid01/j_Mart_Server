@@ -41,7 +41,9 @@ app.use((err, req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("<h1>Mj Mart Server is running</h1>");
+  res.send(
+    "<h1 style='text-align: center' style='color: red'>Mj Mart Server is running</h1>"
+  );
 });
 
 app.listen(PORT, () =>
