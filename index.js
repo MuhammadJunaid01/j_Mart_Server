@@ -12,7 +12,6 @@ const paymentRoute = require("./routes/paymentRoute");
 require("dotenv").config();
 const app = express();
 const httpServer = createServer(app);
-
 const PORT = process.env.PORT || 5000;
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -21,11 +20,9 @@ mongoose
   .then(() => console.log("DB connection successfull!"))
   .catch((error) => console.log("mongoose error", error));
 app.use(cors());
-// app.use(fileupload());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(upload.array());
 app.use(express.static("./public"));
 app.use("/public", express.static("public/products"));
 
@@ -47,8 +44,6 @@ const io = new Server(httpServer, {
 });
 const users = [];
 io.on("connection", (socket) => {
-  // ...
-
   socket.on("message", (data) => {
     const findUser = users.find((user) => user.id === data.userID);
     console.log(users);
