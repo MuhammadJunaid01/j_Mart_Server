@@ -32,6 +32,9 @@ const productSchema = new mongoose.Schema(
     expireDate: {
       type: String,
     },
+    percentage: {
+      type: String,
+    },
   },
   {
     timestamps: true,

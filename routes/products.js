@@ -1,18 +1,26 @@
-const express = require("express");
 const router = require("express").Router();
+const ObjectId = require("mongodb").ObjectId;
+const cloudinary = require("cloudinary").v2;
+const multiparty = require("multiparty");
+require("dotenv").config();
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 const Products = require("../models/pfoducts-model");
-const uploadImag = require("../middleware/fileUpload/fileUpload");
 
 //post product route
 router.post("/addProduct", async (req, res, next) => {
-  // console.log("req body", req.body);
-  uploadImag(req, res, async (error) => {
-    console.log("req body", req.body);
-    if (error) {
-      console.log(error);
-      next(error);
+  const form = new multiparty.Form();
+
+  form.parse(req, async function (err, fields, files) {
+    if (err) {
+      next(err.message);
     }
+
+    console.log("files", files.image[0].path);
     const {
       categoryName,
       productName,
@@ -23,30 +31,47 @@ router.post("/addProduct", async (req, res, next) => {
       offer,
       copunCode,
       expireDate,
-    } = req.body;
-    try {
-      const product = new Products({
-        ProductName: productName,
-        ManufacturerBrand: manufacturerBrand,
-        ManufacturerName: manufacturerName,
-        Price: price,
-        Category: categoryName,
-        description: description,
-        ProductImage: req.file.filename,
-        isOffer: offer,
-        copunCode: copunCode,
-        expireDate: expireDate,
-      });
+      percentage,
+    } = fields;
 
-      const saveProduct = await product.save();
-      if (saveProduct) {
-        res.status(200).json({ data: saveProduct, message: "products save" });
-      } else {
-        res.status(404).json({ message: "opps! product not save in db" });
-      }
-      console.log("add product", req.body.filename);
+    try {
+      cloudinary.uploader.upload(
+        files.image[0].path,
+        { folder: "products" },
+        async (err, result) => {
+          console.log("clodinary result", result);
+          console.log("errrr cloud", err);
+          if (err) {
+            next(err.message);
+          }
+          if (result) {
+            const product = new Products({
+              ProductName: productName[0],
+              ManufacturerBrand: manufacturerBrand[0],
+              ManufacturerName: manufacturerName[0],
+              Price: price[0],
+              Category: categoryName[0],
+              description: description[0],
+              ProductImage: result.url,
+              isOffer: offer[0],
+              copunCode: copunCode[0],
+              expireDate: expireDate[0],
+              percentage: percentage[0],
+            });
+
+            const saveProduct = await product.save();
+            if (saveProduct) {
+              res
+                .status(200)
+                .json({ data: saveProduct, message: "products save" });
+            } else {
+              res.status(404).json({ message: "opps! product not save in db" });
+            }
+          }
+        }
+      );
     } catch (error) {
-      next(new Error(error.message));
+      next(error.message);
     }
   });
 });
@@ -62,4 +87,18 @@ router.get("/offer", async (req, res, next) => {
   });
   res.send(offer);
 });
+
+//timeout offer update
+router.put("/update", async (req, res) => {
+  const updateResulst = await Products.updateOne(
+    { _id: ObjectId(req.body._id) },
+    {
+      $set: { isOffer: false },
+    }
+  );
+  if (updateResulst) {
+    res.status(200).json({ status: "OK", data: updateResulst });
+  }
+});
+
 module.exports = router;

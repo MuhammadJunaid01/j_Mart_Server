@@ -5,7 +5,6 @@ const router = require("express").Router();
 
 router.post("/register", async (req, res, next) => {
   try {
-    console.log("req bod", req.body);
     const { name: username, email, password } = req.body;
 
     const existEmail = await User.findOne({ email: email });
@@ -31,8 +30,9 @@ router.post("/register", async (req, res, next) => {
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    console.log("req body", req.body);
     const checkUser = await User.findOne({ email: email });
-    // console.log(user);
+    console.log("chec user", checkUser);
     const match = await bcrypt.compare(password, checkUser.password);
     if (match) {
       const { password, ...info } = checkUser._doc;
@@ -47,6 +47,7 @@ router.post("/login", async (req, res, next) => {
         ...info,
         token,
       };
+
       res.status(200).json({ user });
     } else {
       res.status(400).json({ message: "user not found" });
@@ -54,5 +55,8 @@ router.post("/login", async (req, res, next) => {
   } catch (error) {
     next(new Error(error.message));
   }
+});
+router.put("/reset", async (req, res) => {
+  console.log(req.body);
 });
 module.exports = router;
