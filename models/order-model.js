@@ -7,12 +7,12 @@ const orderSchema = new mongoose.Schema({
   amount: {
     type: Number,
   },
-  orderBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  orderBy: {
+    type: String,
+  },
   status: {
     type: String,
-    enum: ["proccessing", "packeging", "shipment", "delivery"],
-    default: "proccessing",
   },
 });
 
-module.exports = mongoose.model("Orde", orderSchema);
+module.exports = mongoose.model("Order", orderSchema);
