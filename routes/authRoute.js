@@ -1,6 +1,7 @@
 const User = require("../models/user-model");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
+const { login } = require("../helper");
 const router = require("express").Router();
 
 router.post("/register", async (req, res, next) => {
@@ -19,9 +20,10 @@ router.post("/register", async (req, res, next) => {
       password: hashPassword,
     });
     const result = await newUser.save();
-    res.status(200).json({ status: "OK", data: result });
-    // console.log("result", result);
-    // const { password, ...userInfo } = result;
+    if (result) {
+      const rec = await login({ email, password });
+      res.status(200).json({ status: "OK", data: rec });
+    }
   } catch (error) {
     next(new Error(error.message));
     console.log(error);

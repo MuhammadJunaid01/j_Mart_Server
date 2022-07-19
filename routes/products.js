@@ -32,6 +32,7 @@ router.post("/addProduct", async (req, res, next) => {
       copunCode,
       expireDate,
       percentage,
+      stock,
     } = fields;
 
     try {
@@ -57,6 +58,7 @@ router.post("/addProduct", async (req, res, next) => {
               copunCode: copunCode[0],
               expireDate: expireDate[0],
               percentage: percentage[0],
+              stock: stock[0],
             });
 
             const saveProduct = await product.save();

@@ -35,6 +35,12 @@ const productSchema = new mongoose.Schema(
     percentage: {
       type: String,
     },
+    stock: {
+      type: String,
+    },
+    reviews: {
+      type: [],
+    },
   },
   {
     timestamps: true,
