@@ -32,9 +32,7 @@ router.post("/register", async (req, res, next) => {
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    console.log("req body", req.body);
     const checkUser = await User.findOne({ email: email });
-    console.log("chec user", checkUser);
     const match = await bcrypt.compare(password, checkUser.password);
     if (match) {
       const { password, ...info } = checkUser._doc;

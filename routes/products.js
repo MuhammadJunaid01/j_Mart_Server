@@ -103,4 +103,14 @@ router.put("/update", async (req, res) => {
   }
 });
 
+router.get("/allProducts", async (rq, res, next) => {
+  Products.find({}, function (err, data) {
+    if (data) {
+      res.status(200).json({ message: "success", data: data });
+    } else {
+      res.status(404).json({ message: "something wron", data: {} });
+    }
+  });
+});
+
 module.exports = router;
