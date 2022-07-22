@@ -113,4 +113,16 @@ router.get("/allProducts", async (rq, res, next) => {
   });
 });
 
+//review products
+router.post("/review", async (req, res, next) => {
+  console.log("req body", req.body);
+  const result = await Products.findOneAndUpdate(
+    { _id: req.body.id },
+    {
+      $push: { reviews: { id: req.body.id, reveiw: req.body.text } },
+    }
+  );
+
+  res.send(result);
+});
 module.exports = router;
