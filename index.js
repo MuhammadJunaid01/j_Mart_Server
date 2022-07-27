@@ -29,6 +29,7 @@ app.use("/public", express.static("public/products"));
 app.use(authRoute);
 app.use(productsRoute);
 app.use(paymentRoute);
+
 app.use((err, req, res, next) => {
   res.status(err.status || 400);
   res.json({
@@ -44,14 +45,18 @@ const io = new Server(httpServer, {
 });
 const users = [];
 io.on("connection", (socket) => {
-  socket.on("message", (data) => {
-    const findUser = users.find((user) => user.id === data.userID);
-    console.log(users);
-    if (!findUser) {
-      users.push({ id: data.userID });
-    }
-    if (findUser) {
-      socket.to(findUser).emit("send", data);
+  socket.on("user", (data) => {
+    users.push({ _id: data });
+    socket.emit("user", data);
+  });
+  socket.on("msg", (data) => {
+    console.log("users", users);
+    const findFriend = users.find((user) => user._id === data.receiverId);
+    console.log("find friend", findFriend);
+    console.log("data.receiverId", data.receiverId);
+
+    if (findFriend !== undefined) {
+      socket.to(findFriend._id).emit("private", data);
     }
   });
 });
@@ -62,6 +67,6 @@ app.get("/", (req, res) => {
   );
 });
 
-app.listen(PORT, () =>
+httpServer.listen(PORT, () =>
   console.log(`server is running on http://localhost:${PORT}`)
 );

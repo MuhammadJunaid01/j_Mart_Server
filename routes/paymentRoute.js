@@ -10,7 +10,6 @@ const stripe = Stripe(
 );
 router.post("/payment", async (req, res, next) => {
   const { products, token, amount, user, status } = req.body;
-
   const idempentencyKey = uuidv4();
 
   try {
@@ -69,19 +68,4 @@ router.post("/order", async (req, res, next) => {
   }
 });
 
-//best sale products
-router.get("/bestSaleProducts", async (req, res) => {
-  const orders = await Order.find({});
-  let bestSaleProducts = [];
-  const unik = [];
-  let ok = 0;
-  let not = 0;
-  if (orders) {
-    const result = orders.map((item, index, arr) => {
-      console.log("ined", arr);
-    });
-
-    console.log(result);
-  }
-});
 module.exports = router;
