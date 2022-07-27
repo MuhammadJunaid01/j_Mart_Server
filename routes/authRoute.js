@@ -6,7 +6,7 @@ const router = require("express").Router();
 
 router.post("/register", async (req, res, next) => {
   try {
-    const { name: username, email, password } = req.body;
+    const { name: username, email, password, role } = req.body;
 
     const existEmail = await User.findOne({ email: email });
     if (existEmail) {
@@ -18,6 +18,7 @@ router.post("/register", async (req, res, next) => {
       username,
       email,
       password: hashPassword,
+      isAdmin: role,
     });
     const result = await newUser.save();
     if (result) {
@@ -32,9 +33,7 @@ router.post("/register", async (req, res, next) => {
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    console.log("req body", req.body);
     const checkUser = await User.findOne({ email: email });
-    console.log("chec user", checkUser);
     const match = await bcrypt.compare(password, checkUser.password);
     if (match) {
       const { password, ...info } = checkUser._doc;
@@ -43,7 +42,7 @@ router.post("/login", async (req, res, next) => {
           data: info,
         },
         process.env.SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "5h" }
       );
       const user = {
         ...info,
@@ -58,6 +57,17 @@ router.post("/login", async (req, res, next) => {
     next(new Error(error.message));
   }
 });
+
+//get All users
+router.get("/users", async (req, res) => {
+  const users = await User.find({});
+  if (users) {
+    res.send(users);
+  } else {
+    res.status(404).json({ message: "something wrong!" });
+  }
+});
+
 router.put("/reset", async (req, res) => {
   console.log(req.body);
 });

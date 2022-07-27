@@ -4,7 +4,6 @@ var jwt = require("jsonwebtoken");
 require("dotenv").config();
 const login = async ({ email, password }) => {
   const checkUser = await User.findOne({ email: email });
-  console.log("chec user", checkUser);
   const match = await bcrypt.compare(password, checkUser.password);
   if (match) {
     const { password, ...info } = checkUser._doc;

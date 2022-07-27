@@ -3,7 +3,7 @@ const ObjectId = require("mongodb").ObjectId;
 const cloudinary = require("cloudinary").v2;
 const multiparty = require("multiparty");
 require("dotenv").config();
-
+const Order = require("../models/order-model");
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -17,10 +17,9 @@ router.post("/addProduct", async (req, res, next) => {
 
   form.parse(req, async function (err, fields, files) {
     if (err) {
-      next(err.message);
+      return next(err.message);
     }
 
-    console.log("files", files.image[0].path);
     const {
       categoryName,
       productName,
@@ -40,8 +39,6 @@ router.post("/addProduct", async (req, res, next) => {
         files.image[0].path,
         { folder: "products" },
         async (err, result) => {
-          console.log("clodinary result", result);
-          console.log("errrr cloud", err);
           if (err) {
             next(err.message);
           }
@@ -63,17 +60,19 @@ router.post("/addProduct", async (req, res, next) => {
 
             const saveProduct = await product.save();
             if (saveProduct) {
-              res
+              return res
                 .status(200)
                 .json({ data: saveProduct, message: "products save" });
             } else {
-              res.status(404).json({ message: "opps! product not save in db" });
+              return res
+                .status(404)
+                .json({ message: "opps! product not save in db" });
             }
           }
         }
       );
     } catch (error) {
-      next(error.message);
+      return next(error.message);
     }
   });
 });
@@ -87,7 +86,7 @@ router.get("/offer", async (req, res, next) => {
       return offer.push(item);
     }
   });
-  res.send(offer);
+  return res.send(offer);
 });
 
 //timeout offer update
@@ -99,8 +98,90 @@ router.put("/update", async (req, res) => {
     }
   );
   if (updateResulst) {
-    res.status(200).json({ status: "OK", data: updateResulst });
+    return res.status(200).json({ status: "OK", data: updateResulst });
   }
 });
 
+router.get("/allProducts", async (rq, res, next) => {
+  Products.find({}, function (err, data) {
+    if (data) {
+      return res.status(200).json({ message: "success", data: data });
+    } else {
+      return res.status(404).json({ message: "something wron", data: {} });
+    }
+  });
+});
+
+//review products
+router.post("/review", async (req, res, next) => {
+  console.log("req body", req.body);
+  const result = await Products.findOneAndUpdate(
+    { _id: req.body.id },
+    {
+      $push: { reviews: { id: req.body.id, reveiw: req.body.text } },
+    }
+  );
+
+  return res.send(result);
+});
+
+//best sale products
+router.get("/bestSaleProducts", async (req, res, next) => {
+  try {
+    const orders = await Order.find({});
+    let bestSale = [];
+    let uniqueId = [];
+
+    if (orders) {
+      const result = orders.map((item, index, arr) => {
+        const data = item.products.forEach((el) => {
+          let match = uniqueId.find((item) => item._id == el._id);
+          if (!match) {
+            uniqueId.push({ _id: el._id, numberOfOrder: 1 });
+          } else {
+            const newUniqueId = [];
+            uniqueId.forEach((item) => {
+              if (item._id == el._id) {
+                const newNumOfOrder = item.numberOfOrder + 1;
+                newUniqueId.push({
+                  _id: item._id,
+                  numberOfOrder: newNumOfOrder,
+                });
+              } else {
+                newUniqueId.push(item);
+              }
+              uniqueId = newUniqueId;
+            });
+          }
+        });
+        uniqueId.forEach((data) => {
+          if (data.numberOfOrder >= 7) {
+          }
+        });
+      });
+      uniqueId.forEach((el) => {
+        if (el.numberOfOrder >= 7) {
+          Order.find({ id: el._id }, function (err, docs) {
+            // console.log("hello best sale", bestSale);
+            if (err) {
+              console.log("hello erro", err);
+            }
+            if (docs) {
+              bestSale.push(docs);
+
+              // docs.products.forEach((product) => {
+              //   console.log("hello product", product);
+              // });
+            }
+          });
+        }
+      });
+      setTimeout(() => {
+        return res.status(200).json({ message: "success", data: bestSale });
+      }, 5000);
+    }
+  } catch (error) {
+    return next(error);
+  }
+});
 module.exports = router;

@@ -9,12 +9,16 @@ const stripe = Stripe(
   "sk_test_51LNNMzC82usS9HEFSNfSb7TcwjFB9cvF1cscOUF69ORyvqfUdTVsNfsfasLPjVzgqfFsi0TkVVxgZLvB0WiDCPMd00BS91RGRr"
 );
 router.post("/payment", async (req, res, next) => {
-  const { products, token, amount } = req.body;
-  console.log("amount", amount);
-  // console.log("TOKEN", token);
+  const { products, token, amount, user, status } = req.body;
   const idempentencyKey = uuidv4();
 
   try {
+    const order = new Order({
+      products: products,
+      amount: amount,
+      orderBy: user,
+      status: status,
+    });
     const charge = await stripe.charges.create({
       amount: amount,
       currency: "usd",
@@ -22,39 +26,17 @@ router.post("/payment", async (req, res, next) => {
       metadata: { order_id: token.id },
     });
     if (charge) {
-      return res.status(200).json({ message: "success", data: charge });
+      const newOrder = await order.save();
+      if (newOrder) {
+        return res
+          .status(200)
+          .json({ message: "success", data: { charge, newOrder } });
+      }
     } else {
       return res
         .json(404)
         .json({ message: "something Wrong! ,please try again" });
     }
-    // return stripe.customers
-    //   .create({
-    //     email: token.email,
-    //     source: token.id,
-    //   })
-    //   .then((customer) => {
-    //     console.log("hello customer", customer.id);
-    //     stripe.charges.create(
-    //       {
-    //         amount: amount,
-    //         currency: "USD",
-    //         customer: customer.id,
-    //         receipt_email: token.email,
-    //         description: "hello",
-    //       },
-    //       { idempentencyKey }
-    //     );
-    //     console.log("hello testing");
-    //   })
-    //   .then((result) => {
-    //     res.status(200).json({ message: "success", data: result });
-    //   })
-    //   .catch((err) => {
-    //     console.log("ERROR", err.message);
-    //     res.json(404).json({ message: "something Wrong! ,please try again" });
-    //     next(err.message);
-    //   });
   } catch (error) {
     console.log("ERROR", error.message);
     next(error.message);
@@ -85,4 +67,5 @@ router.post("/order", async (req, res, next) => {
     next(error.message);
   }
 });
+
 module.exports = router;
