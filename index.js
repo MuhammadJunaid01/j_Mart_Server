@@ -2,10 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-
 const authRoute = require("./routes/authRoute");
 const productsRoute = require("./routes/products");
 const paymentRoute = require("./routes/paymentRoute");

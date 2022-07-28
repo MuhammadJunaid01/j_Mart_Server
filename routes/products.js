@@ -154,24 +154,15 @@ router.get("/bestSaleProducts", async (req, res, next) => {
             });
           }
         });
-        uniqueId.forEach((data) => {
-          if (data.numberOfOrder >= 7) {
-          }
-        });
       });
       uniqueId.forEach((el) => {
         if (el.numberOfOrder >= 7) {
           Order.find({ id: el._id }, function (err, docs) {
-            // console.log("hello best sale", bestSale);
             if (err) {
-              console.log("hello erro", err);
+              return next(err);
             }
             if (docs) {
               bestSale.push(docs);
-
-              // docs.products.forEach((product) => {
-              //   console.log("hello product", product);
-              // });
             }
           });
         }
