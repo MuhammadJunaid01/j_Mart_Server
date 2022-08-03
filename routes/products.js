@@ -162,16 +162,11 @@ router.get("/bestSaleProducts", async (req, res, next) => {
       uniqueId.forEach((el) => {
         if (el.numberOfOrder >= 7) {
           Order.find({ id: el._id }, function (err, docs) {
-            // console.log("hello best sale", bestSale);
             if (err) {
               console.log("hello erro", err);
             }
             if (docs) {
               bestSale.push(docs);
-
-              // docs.products.forEach((product) => {
-              //   console.log("hello product", product);
-              // });
             }
           });
         }

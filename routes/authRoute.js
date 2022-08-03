@@ -3,7 +3,14 @@ const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const { login } = require("../helper");
 const router = require("express").Router();
+const cloudinary = require("cloudinary").v2;
+const multiparty = require("multiparty");
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 router.post("/register", async (req, res, next) => {
   try {
     const { name: username, email, password, role } = req.body;
@@ -68,7 +75,109 @@ router.get("/users", async (req, res) => {
   }
 });
 
-router.put("/reset", async (req, res) => {
-  console.log(req.body);
+// router.put("/editProfile", async (req, res, next) => {
+//   const form = new multiparty.Form();
+//   form.parse(req, async function (err, fields, files) {
+//     const autheader = req.headers.authorization;
+//     const token = autheader.split(" ")[1];
+//     console.log("files", req.body);
+//   });
+//   // form.parse(req, async function (err, fields, files) {
+//   //   const autheader = req.headers.authorization;
+//   //   const token = autheader.split(" ")[1];
+//   //   console.log("files", req.body);
+
+//   //   console.log("files", files);
+//   //   console.log("feilds", fields);
+//   //   // try {
+//   //   //   jwt.verify(token, process.env.SECRET, async (err, user) => {
+//   //   //     if (err) {
+//   //   //       return res.status(403).json("user token");
+//   //   //     }
+//   //   //     if (user) {
+//   //   //       console.log("decoded", user);
+//   //   //       // return res.send(user);
+
+//   //   //       // const result = await User.findOneAndUpdate(
+//   //   //       //   { _id: user.data._id },
+//   //   //       //   { $push: { image: {} } }
+//   //   //       // );
+//   //   //       // cloudinary.uploader.upload(
+//   //   //       //   files.image[0].path,
+//   //   //       //   { folder: "users" },
+//   //   //       //   async (err, result) => {
+//   //   //       //     if (err) {
+//   //   //       //       next(err.message);
+//   //   //       //     }
+//   //   //       //     if (result) {
+//   //   //       //     }
+//   //   //       //   }
+//   //   //       // );
+//   //   //     }
+//   //   //   });
+//   //   //   return res.json("user success");
+//   //   // } catch (error) {
+//   //   //   console.log(error.message);
+//   //   //   return next(error.message);
+//   //   // }
+//   //   // if (err) {
+//   //   //   return next(err.message);
+//   //   // }
+//   //   // const image = files.image[0].path;
+//   //   console.log("image", files);
+//   // });
+// });
+router.put("/editProfile", async (req, res, next) => {
+  const form = new multiparty.Form();
+
+  form.parse(req, async function (err, fields, files) {
+    console.log("feilds", fields);
+    console.log("files,files", files);
+    if (err) {
+      return next(err.message);
+    }
+
+    // const {} = fields;
+
+    try {
+      // cloudinary.uploader.upload(
+      //   files.image[0].path,
+      //   { folder: "products" },
+      //   async (err, result) => {
+      //     if (err) {
+      //       next(err.message);
+      //     }
+      //     if (result) {
+      //       const product = new Products({
+      //         ProductName: productName[0],
+      //         ManufacturerBrand: manufacturerBrand[0],
+      //         ManufacturerName: manufacturerName[0],
+      //         Price: price[0],
+      //         Category: categoryName[0],
+      //         description: description[0],
+      //         ProductImage: result.url,
+      //         isOffer: offer[0],
+      //         copunCode: copunCode[0],
+      //         expireDate: expireDate[0],
+      //         percentage: percentage[0],
+      //         stock: stock[0],
+      //       });
+      //       const saveProduct = await product.save();
+      //       if (saveProduct) {
+      //         return res
+      //           .status(200)
+      //           .json({ data: saveProduct, message: "products save" });
+      //       } else {
+      //         return res
+      //           .status(404)
+      //           .json({ message: "opps! product not save in db" });
+      //       }
+      //     }
+      //   }
+      // );
+    } catch (error) {
+      return next(error.message);
+    }
+  });
 });
 module.exports = router;

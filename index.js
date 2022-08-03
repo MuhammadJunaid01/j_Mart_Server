@@ -2,10 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-
 const authRoute = require("./routes/authRoute");
 const productsRoute = require("./routes/products");
 const paymentRoute = require("./routes/paymentRoute");
@@ -19,12 +17,17 @@ mongoose
   })
   .then(() => console.log("DB connection successfull!"))
   .catch((error) => console.log("mongoose error", error));
-app.use(cors());
+
+const corsOptions = {
+  origin: "*",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./public"));
-app.use("/public", express.static("public/products"));
 
 app.use(authRoute);
 app.use(productsRoute);
