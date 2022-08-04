@@ -103,6 +103,7 @@ router.put("/update", async (req, res) => {
 });
 
 router.get("/allProducts", async (rq, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   Products.find({}, function (err, data) {
     if (data) {
       return res.status(200).json({ message: "success", data: data });
@@ -127,6 +128,10 @@ router.post("/review", async (req, res, next) => {
 
 //best sale products
 router.get("/bestSaleProducts", async (req, res, next) => {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://shrouded-reaches-11492.herokuapp.com"
+  );
   try {
     const orders = await Order.find({});
     let bestSale = [];

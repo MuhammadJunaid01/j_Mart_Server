@@ -24,8 +24,18 @@ const corsOptions = {
   optionSuccessStatus: 200,
 };
 app.use(
-  cors({ origin: "https://junaidecommerce.netlify.app/", credentials: true })
+  cors({
+    origin: "https://shrouded-reaches-11492.herokuapp.com",
+    credentials: true,
+  })
 );
+app.use(function (req, res, next) {
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://shrouded-reaches-11492.herokuapp.com"
+  );
+  next();
+});
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -46,6 +56,7 @@ const io = new Server(httpServer, {
   cors: {
     origin: "https://junaidecommerce.netlify.app/",
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 const users = [];
