@@ -42,7 +42,7 @@ app.use((err, req, res, next) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://junaidecommerce.netlify.app/",
     methods: ["GET", "POST"],
   },
 });
