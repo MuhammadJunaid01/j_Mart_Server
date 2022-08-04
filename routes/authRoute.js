@@ -67,7 +67,6 @@ router.post("/login", async (req, res, next) => {
 
 //get All users
 router.get("/users", async (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   const users = await User.find({});
   if (users) {
     res.send(users);
@@ -77,7 +76,6 @@ router.get("/users", async (req, res) => {
 });
 
 router.put("/editProfile", async (req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   const form = new multiparty.Form();
   try {
     form.parse(req, async function (err, fields, files) {
