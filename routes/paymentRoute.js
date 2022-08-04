@@ -5,9 +5,7 @@ const Order = require("../models/order-model");
 const User = require("../models/user-model");
 const Stripe = require("stripe");
 //create a new coustomer
-const stripe = Stripe(
-  "sk_test_51LNNMzC82usS9HEFSNfSb7TcwjFB9cvF1cscOUF69ORyvqfUdTVsNfsfasLPjVzgqfFsi0TkVVxgZLvB0WiDCPMd00BS91RGRr"
-);
+const stripe = Stripe(process.env.STRIPE_SECRET);
 router.post("/payment", async (req, res, next) => {
   const { products, token, amount, user, status } = req.body;
   const idempentencyKey = uuidv4();

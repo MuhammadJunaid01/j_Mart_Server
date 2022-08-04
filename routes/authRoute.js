@@ -75,109 +75,47 @@ router.get("/users", async (req, res) => {
   }
 });
 
-// router.put("/editProfile", async (req, res, next) => {
-//   const form = new multiparty.Form();
-//   form.parse(req, async function (err, fields, files) {
-//     const autheader = req.headers.authorization;
-//     const token = autheader.split(" ")[1];
-//     console.log("files", req.body);
-//   });
-//   // form.parse(req, async function (err, fields, files) {
-//   //   const autheader = req.headers.authorization;
-//   //   const token = autheader.split(" ")[1];
-//   //   console.log("files", req.body);
-
-//   //   console.log("files", files);
-//   //   console.log("feilds", fields);
-//   //   // try {
-//   //   //   jwt.verify(token, process.env.SECRET, async (err, user) => {
-//   //   //     if (err) {
-//   //   //       return res.status(403).json("user token");
-//   //   //     }
-//   //   //     if (user) {
-//   //   //       console.log("decoded", user);
-//   //   //       // return res.send(user);
-
-//   //   //       // const result = await User.findOneAndUpdate(
-//   //   //       //   { _id: user.data._id },
-//   //   //       //   { $push: { image: {} } }
-//   //   //       // );
-//   //   //       // cloudinary.uploader.upload(
-//   //   //       //   files.image[0].path,
-//   //   //       //   { folder: "users" },
-//   //   //       //   async (err, result) => {
-//   //   //       //     if (err) {
-//   //   //       //       next(err.message);
-//   //   //       //     }
-//   //   //       //     if (result) {
-//   //   //       //     }
-//   //   //       //   }
-//   //   //       // );
-//   //   //     }
-//   //   //   });
-//   //   //   return res.json("user success");
-//   //   // } catch (error) {
-//   //   //   console.log(error.message);
-//   //   //   return next(error.message);
-//   //   // }
-//   //   // if (err) {
-//   //   //   return next(err.message);
-//   //   // }
-//   //   // const image = files.image[0].path;
-//   //   console.log("image", files);
-//   // });
-// });
 router.put("/editProfile", async (req, res, next) => {
   const form = new multiparty.Form();
+  try {
+    form.parse(req, async function (err, fields, files) {
+      const autheader = req.headers.authorization;
+      const token = autheader.split(" ")[1];
+      const updateUser = [];
+      jwt.verify(token, process.env.SECRET, async (err, user) => {
+        if (err) {
+          return next(err.message);
+        }
+        if (user) {
+          cloudinary.uploader.upload(
+            files.image[0].path,
+            { folder: "users" },
+            async (err, result) => {
+              if (err) {
+                next(err.message);
+              }
+              if (result) {
+                const update = await User.findOneAndUpdate(
+                  { _id: user.data._id },
+                  { $set: { image: result.url } }
+                );
+                const updateUserImage = await update.save();
+                updateUser.push(updateUserImage);
+              }
+            }
+          );
+        }
+      });
 
-  form.parse(req, async function (err, fields, files) {
-    console.log("feilds", fields);
-    console.log("files,files", files);
-    if (err) {
-      return next(err.message);
-    }
+      return res.send(updateUser);
+      if (err) {
+        return next(err.message);
+      }
 
-    // const {} = fields;
-
-    try {
-      // cloudinary.uploader.upload(
-      //   files.image[0].path,
-      //   { folder: "products" },
-      //   async (err, result) => {
-      //     if (err) {
-      //       next(err.message);
-      //     }
-      //     if (result) {
-      //       const product = new Products({
-      //         ProductName: productName[0],
-      //         ManufacturerBrand: manufacturerBrand[0],
-      //         ManufacturerName: manufacturerName[0],
-      //         Price: price[0],
-      //         Category: categoryName[0],
-      //         description: description[0],
-      //         ProductImage: result.url,
-      //         isOffer: offer[0],
-      //         copunCode: copunCode[0],
-      //         expireDate: expireDate[0],
-      //         percentage: percentage[0],
-      //         stock: stock[0],
-      //       });
-      //       const saveProduct = await product.save();
-      //       if (saveProduct) {
-      //         return res
-      //           .status(200)
-      //           .json({ data: saveProduct, message: "products save" });
-      //       } else {
-      //         return res
-      //           .status(404)
-      //           .json({ message: "opps! product not save in db" });
-      //       }
-      //     }
-      //   }
-      // );
-    } catch (error) {
-      return next(error.message);
-    }
-  });
+      // const {} = fields;
+    });
+  } catch (error) {
+    return next(error.message);
+  }
 });
 module.exports = router;
