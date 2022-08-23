@@ -11,6 +11,7 @@ require("dotenv").config();
 const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
+app.use(cors());
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -18,17 +19,12 @@ mongoose
   .then(() => console.log("DB connection successfull!"))
   .catch((error) => console.log("mongoose error", error));
 
-const corsOptions = {
-  origin: "*",
-  credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200,
-};
-app.use(
-  cors({
-    origin: "https://shrouded-reaches-11492.herokuapp.com",
-    credentials: true,
-  })
-);
+// const corsOptions = {
+//   origin: "*",
+//   credentials: fa, //access-control-allow-credentials:true
+//   optionSuccessStatus: 200,
+// };
+
 app.all("/*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -60,8 +56,8 @@ app.use((err, req, res, next) => {
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "https://junaidecommerce.netlify.app/",
-    methods: ["GET", "POST"],
+    origin: "*",
+    methods: ["GET", "POST", "PUT"],
     credentials: true,
   },
 });
