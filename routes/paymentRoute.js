@@ -4,6 +4,10 @@ require("dotenv").config();
 const Order = require("../models/order-model");
 const User = require("../models/user-model");
 const Stripe = require("stripe");
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? "https://j-mart-gt4t.onrender.com"
+    : "http://localhost:3000";
 //create a new coustomer
 const stripe = Stripe(process.env.STRIPE_SECRET);
 router.post("/payment", async (req, res, next) => {
@@ -24,6 +28,8 @@ router.post("/payment", async (req, res, next) => {
       metadata: { order_id: token.id },
     });
     if (charge) {
+      res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
+
       const newOrder = await order.save();
       if (newOrder) {
         return res
@@ -57,6 +63,7 @@ router.post("/order", async (req, res, next) => {
       user,
     };
     if (order) {
+      res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
       res.status(200).json({ message: "OK", success: true });
     } else {
       res.status(404).json({});

@@ -10,7 +10,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 const Products = require("../models/pfoducts-model");
-
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? "https://j-mart-gt4t.onrender.com"
+    : "http://localhost:3000";
 //post product route
 router.post("/addProduct", async (req, res, next) => {
   const form = new multiparty.Form();
@@ -60,6 +63,7 @@ router.post("/addProduct", async (req, res, next) => {
 
             const saveProduct = await product.save();
             if (saveProduct) {
+              res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
               return res
                 .status(200)
                 .json({ data: saveProduct, message: "products save" });
@@ -86,6 +90,7 @@ router.get("/offer", async (req, res, next) => {
       return offer.push(item);
     }
   });
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
   return res.send(offer);
 });
 
@@ -98,6 +103,7 @@ router.put("/update", async (req, res) => {
     }
   );
   if (updateResulst) {
+    res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
     return res.status(200).json({ status: "OK", data: updateResulst });
   }
 });
@@ -108,6 +114,7 @@ router.get("/allProducts", async (rq, res, next) => {
   if (!products) {
     return res.status(404).json({ message: "something wron", data: {} });
   }
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
   return res.status(200).json({ message: "success", data: products });
   // Products.find({}, function (err, data) {
   //   if (data) {
@@ -177,6 +184,7 @@ router.get("/bestSaleProducts", async (req, res, next) => {
           });
         }
       });
+      res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
       setTimeout(() => {
         return res.status(200).json({ message: "success", data: bestSale });
       }, 5000);
