@@ -103,13 +103,19 @@ router.put("/update", async (req, res) => {
 });
 
 router.get("/allProducts", async (rq, res, next) => {
-  Products.find({}, function (err, data) {
-    if (data) {
-      return res.status(200).json({ message: "success", data: data });
-    } else {
-      return res.status(404).json({ message: "something wron", data: {} });
-    }
-  });
+  const products = await Products.find({});
+  console.log("products", products);
+  if (!products) {
+    return res.status(404).json({ message: "something wron", data: {} });
+  }
+  return res.status(200).json({ message: "success", data: products });
+  // Products.find({}, function (err, data) {
+  //   if (data) {
+  //     return res.status(200).json({ message: "success", data: data });
+  //   } else {
+  //     return res.status(404).json({ message: "something wron", data: {} });
+  //   }
+  // });
 });
 
 //review products
