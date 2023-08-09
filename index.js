@@ -12,6 +12,7 @@ const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
 app.use(cors());
+mongoose.set("strictQuery", false);
 mongoose
   .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
