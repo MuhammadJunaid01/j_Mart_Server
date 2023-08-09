@@ -61,7 +61,6 @@ const io = new Server(httpServer, {
     credentials: true,
   },
 });
-// console.log("port", process.env.PORT);
 const users = [];
 io.on("connection", (socket) => {
   socket.on("user", (data) => {
