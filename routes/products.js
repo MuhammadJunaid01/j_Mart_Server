@@ -104,7 +104,7 @@ router.put("/update", async (req, res) => {
 
 router.get("/allProducts", async (rq, res, next) => {
   const products = await Products.find({});
-  console.log("products", products);
+  // console.log("products", products);
   if (!products) {
     return res.status(404).json({ message: "something wron", data: {} });
   }

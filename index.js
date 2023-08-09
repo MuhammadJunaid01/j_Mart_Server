@@ -25,20 +25,23 @@ mongoose
 //   credentials: fa, //access-control-allow-credentials:true
 //   optionSuccessStatus: 200,
 // };
-
-app.all("/*", function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? "https://j-mart-gt4t.onrender.com" // Replace with your production URL
+    : "http://localhost:3000"; // Development URL
+const corsOptions = {
+  origin: allowedOrigins,
+  optionsSuccessStatus: 200,
+};
+console.log("dev URI", process.env.DB_URI);
+//middleware
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", corsOptions.origin);
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
