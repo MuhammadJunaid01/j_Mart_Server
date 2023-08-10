@@ -21,7 +21,11 @@ const allowedOrigins =
 // Apply CORS middleware at the beginning of your middleware stack
 app.use(
   cors({
-    origin: ["https://j-mart-gt4t.onrender.com", "http://localhost:3000"],
+    origin: [
+      "https://j-mart-gt4t.onrender.com",
+      "http://localhost:3000",
+      "https://jmartju.netlify.app",
+    ],
     methods: "GET, POST, PUT, DELETE",
     allowedHeaders: "Content-Type, Authorization",
     optionsSuccessStatus: 200,
