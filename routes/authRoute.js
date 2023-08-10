@@ -5,10 +5,7 @@ const { login } = require("../helper");
 const router = require("express").Router();
 const cloudinary = require("cloudinary").v2;
 const multiparty = require("multiparty");
-const allowedOrigins =
-  process.env.NODE_ENV === "production"
-    ? "https://j-mart-gt4t.onrender.com"
-    : "http://localhost:3000";
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -32,8 +29,6 @@ router.post("/register", async (req, res, next) => {
     });
     const result = await newUser.save();
     if (result) {
-      res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
-
       const rec = await login({ email, password });
       res.status(200).json({ status: "OK", data: rec });
     }
@@ -60,7 +55,6 @@ router.post("/login", async (req, res, next) => {
         ...info,
         token,
       };
-      res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
 
       res.status(200).json({ user });
     } else {
@@ -75,8 +69,6 @@ router.post("/login", async (req, res, next) => {
 router.get("/users", async (req, res) => {
   const users = await User.find({});
   if (users) {
-    res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
-
     res.send(users);
   } else {
     res.status(404).json({ message: "something wrong!" });
@@ -114,7 +106,6 @@ router.put("/editProfile", async (req, res, next) => {
           );
         }
       });
-      res.setHeader("Access-Control-Allow-Origin", allowedOrigins);
 
       return res.send(updateUser);
     });
