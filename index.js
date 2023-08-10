@@ -21,7 +21,7 @@ const allowedOrigins =
 // Apply CORS middleware at the beginning of your middleware stack
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: "*",
     methods: "GET, POST, PUT, DELETE",
     allowedHeaders: "Content-Type, Authorization",
     optionsSuccessStatus: 200,
