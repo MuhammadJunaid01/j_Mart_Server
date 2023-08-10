@@ -10,7 +10,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET);
 router.post("/payment", async (req, res, next) => {
   const { products, token, amount, user, status } = req.body;
   const idempentencyKey = uuidv4();
-  console.log("Request Headers:", req.headers); // Debugging line
+  // console.log("Request Headers:", req.headers); // Debugging line
 
   try {
     const order = new Order({
@@ -22,7 +22,7 @@ router.post("/payment", async (req, res, next) => {
     const charge = await stripe.charges.create({
       amount: amount,
       currency: "usd",
-      source: token.id, // obtained with Stripe.js
+      source: token, // obtained with Stripe.js
       metadata: { order_id: token.id },
     });
     if (charge) {
