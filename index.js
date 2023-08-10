@@ -11,7 +11,7 @@ require("dotenv").config();
 const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
-
+console.log("STRIPE_SECRET", process.env.STRIPE_SECRET);
 // Define allowed origins based on environment
 const allowedOrigins =
   process.env.NODE_ENV === "production"
