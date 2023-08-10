@@ -127,55 +127,34 @@ router.post("/review", async (req, res, next) => {
 //best sale products
 router.get("/bestSaleProducts", async (req, res, next) => {
   try {
-    const orders = await Order.find({});
-    let bestSale = [];
-    let uniqueId = [];
+    const ordersWithHighQuantityProducts = await Order.aggregate([
+      {
+        $match: {
+          "products.quantity": { $gt: 7 }, // Match orders with products.quantity > 7
+        },
+      },
+      {
+        $project: {
+          products: {
+            $filter: {
+              input: "$products",
+              as: "product",
+              cond: { $gt: ["$$product.quantity", 7] }, // Filter products with quantity > 7
+            },
+          },
+          amount: 1,
+          orderBy: 1,
+          status: 1,
+        },
+      },
+    ]);
 
-    if (orders) {
-      const result = orders.map((item, index, arr) => {
-        const data = item.products.forEach((el) => {
-          let match = uniqueId.find((item) => item._id == el._id);
-          if (!match) {
-            uniqueId.push({ _id: el._id, numberOfOrder: 1 });
-          } else {
-            const newUniqueId = [];
-            uniqueId.forEach((item) => {
-              if (item._id == el._id) {
-                const newNumOfOrder = item.numberOfOrder + 1;
-                newUniqueId.push({
-                  _id: item._id,
-                  numberOfOrder: newNumOfOrder,
-                });
-              } else {
-                newUniqueId.push(item);
-              }
-              uniqueId = newUniqueId;
-            });
-          }
-        });
-        uniqueId.forEach((data) => {
-          if (data.numberOfOrder >= 7) {
-          }
-        });
-      });
-      uniqueId.forEach((el) => {
-        if (el.numberOfOrder >= 7) {
-          Order.find({ id: el._id }, function (err, docs) {
-            if (err) {
-              console.log("hello erro", err);
-            }
-            if (docs) {
-              bestSale.push(docs);
-            }
-          });
-        }
-      });
-      setTimeout(() => {
-        return res.status(200).json({ message: "success", data: bestSale });
-      }, 5000);
-    }
+    res
+      .status(200)
+      .json({ message: "success", data: ordersWithHighQuantityProducts });
   } catch (error) {
-    return next(error);
+    console.log("ERROR", error.message);
+    next(error.message);
   }
 });
 module.exports = router;
