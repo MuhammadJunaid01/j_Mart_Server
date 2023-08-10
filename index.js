@@ -21,7 +21,7 @@ const allowedOrigins =
 // Apply CORS middleware at the beginning of your middleware stack
 app.use(
   cors({
-    origin: "*",
+    origin: ["https://j-mart-gt4t.onrender.com", "http://localhost:3000"],
     methods: "GET, POST, PUT, DELETE",
     allowedHeaders: "Content-Type, Authorization",
     optionsSuccessStatus: 200,

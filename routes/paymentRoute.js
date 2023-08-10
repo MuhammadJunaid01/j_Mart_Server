@@ -12,9 +12,6 @@ router.post("/payment", async (req, res, next) => {
   const idempentencyKey = uuidv4();
   console.log("Request Headers:", req.headers); // Debugging line
   //  Set CORS headers manually for this route
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   try {
     const order = new Order({
