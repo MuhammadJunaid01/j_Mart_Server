@@ -11,7 +11,6 @@ require("dotenv").config();
 const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5000;
-console.log("STRIPE_SECRET", process.env.STRIPE_SECRET);
 // Define allowed origins based on environment
 const allowedOrigins =
   process.env.NODE_ENV === "production"
@@ -22,9 +21,9 @@ const allowedOrigins =
 app.use(
   cors({
     origin: [
-      "https://j-mart-gt4t.onrender.com",
       "http://localhost:3000",
       "https://jmartju.netlify.app",
+      "https://j-mart-gt4t.onrender.com",
     ],
     methods: "GET, POST, PUT, DELETE",
     allowedHeaders: "Content-Type, Authorization",
